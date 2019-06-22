@@ -27,6 +27,9 @@ class UDP(object):
         # Ask operating system to let us do broadcasts from socket
         self.handle.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
+        # allow reuse of sockets to enable me test in multiple shells
+        self.handle.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
         # Bind UDP socket to local port so we can receive pings
         self.handle.bind(('', port))
 
@@ -36,5 +39,6 @@ class UDP(object):
     def recv(self, n):
         buf, addrinfo = self.handle.recvfrom(n)
         if addrinfo[0] != self.address:
-            print(f">>> Found peer {addrinfo}")
+            ip_add, port_num = addrinfo
+            print(f">>> Found peer {ip_add}:{port_num}")
         return buf
