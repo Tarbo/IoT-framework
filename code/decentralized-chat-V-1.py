@@ -10,11 +10,11 @@ import zmq
 # not in stdlib, install it yourself using `pip install netifaces`
 from netifaces import interfaces, ifaddresses, AF_INET
 
-# portable for Python 2.x and 3.x
-try:
-    raw_input
-except NameError:
-    raw_input = input
+# # portable for Python 2.x and 3.x
+# try:
+#     raw_input
+# except NameError:
+#     raw_input = input
 
 # create the listener function
 
@@ -46,11 +46,13 @@ def main():
     inet = ifaddresses(args.interface)[AF_INET]
     addr = inet[0]['addr']
     subnet = addr.rsplit('.', 1)[0]
+    print(f'>>> subnet IP ---> {subnet} is used')
     ctx = zmq.Context.instance()
     listen_thread = Thread(target=subscriber, args=(subnet,))
     listen_thread.start()
     broadcast = ctx.socket(zmq.PUB)
-    broadcast.bind(f"tcp://{args.interface}")
+    broadcast.bind(f"tcp://{args.interface}:9000")
+    print(f'>>> bound the publisher')
     print(f'>>> Chat starting on {args.interface}:9000 {subnet}.*')
     while True:
         try:
